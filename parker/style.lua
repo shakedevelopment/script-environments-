@@ -1,0 +1,98 @@
+local plr = game:GetService("Players").LocalPlayer
+local pgui = plr.PlayerGui
+local char = plr.Character or plr.CharacterAdded:Wait()
+local status = plr.Status
+
+status.Settings.BrawlerID.Value = 1841133289
+status.Settings.MusicVolume.Value = 6.5
+
+local repStorage = game:GetService("ReplicatedStorage")
+
+local ME = repStorage.Events.ME
+local moves = repStorage.Moves
+local styles = repStorage.Styles
+
+local connections = { }
+
+local parker = styles.Brawler
+local brawl = styles.Brawler
+
+function isInBattle()
+	return (plr:FindFirstChild("InBattle") and true or false)
+end
+
+function isDungeon()
+	return game.ReplicatedStorage.Dungeon.Value
+end
+
+function doingHact()
+	return (plr.Character:FindFirstChild("Heated") and true or false)
+end
+
+function showMaxHeatEffect()
+	return (isInBattle() and not doingHact() and plr.Status.Heat.Value >= 100) and true or false
+end
+
+function hasWeaponInHand()
+	return (plr.Character:FindFirstChild("Holding") and true or false)
+end
+
+function IsInPvp()
+    if plr:FindFirstChild("PvPed") then
+        return true
+    else
+        return false
+    end
+end
+
+local AuraSlot = "Brawler"
+parker.Color.Value = Color3.fromRGB(85, 255, 0)
+
+function AuraChange()
+	if status.Style.Value == AuraSlot then 
+        local AuraColor = parker.Color.Value
+		local AuraSequence = ColorSequence.new({ColorSequenceKeypoint.new(0, AuraColor), ColorSequenceKeypoint.new(1, AuraColor)})
+		char.HumanoidRootPart.Fire_Main.Color = AuraSequence
+		char.HumanoidRootPart.Fire_Secondary.Color = AuraSequence
+		char.HumanoidRootPart.Fire_Main.Rate = status.Heat.Value >= 100 and 115 or status.Heat.Value >= 75 and 85 or 80
+		char.HumanoidRootPart.Fire_Secondary.Rate = status.Heat.Value >= 100 and 90 or status.Heat.Value >= 75 and 80 or 70
+		char.HumanoidRootPart.Lines1.Color = AuraSequence
+		char.HumanoidRootPart.Lines1.Rate = status.Heat.Value >= 100 and 60 or status.Heat.Value >= 75 and 40 or 20
+		char.HumanoidRootPart.Lines2.Color = AuraSequence
+		char.HumanoidRootPart.Lines2.Rate = status.Heat.Value >= 100 and 60 or status.Heat.Value >= 75 and 40 or 20
+		char.HumanoidRootPart.Sparks.Color = AuraSequence
+		if not char.HumanoidRootPart.TimeFor.Enabled then
+			char.HumanoidRootPart.TimeFor.Color = AuraSequence
+		end
+
+		char.UpperTorso["r2f_aura_burst"].Lines1.Color = AuraSequence
+		char.UpperTorso["r2f_aura_burst"].Lines2.Color = AuraSequence
+		char.UpperTorso["r2f_aura_burst"].Lines1.Enabled = showMaxHeatEffect()
+		char.UpperTorso["r2f_aura_burst"].Flare.Enabled = showMaxHeatEffect()
+		char.UpperTorso["r2f_aura_burst"].Flare.Color = AuraSequence
+		char.UpperTorso["r2f_aura_burst"].Smoke.Color = AuraSequence
+		char.UpperTorso.Evading.Color = AuraSequence
+	end
+end
+
+connections.aura = game:GetService("RunService").RenderStepped:Connect(AuraChange)
+
+parker.VisualName.Value = "Parker"
+parker.Idle.AnimationId = brawl.Idle.AnimationId
+parker.Speed.Value = 1.5
+
+parker.Strike1.Value = "BStrike1"
+parker.Strike2.Value = "BStrike2"
+parker.Strike3.Value = "BStrike3"
+parker.Strike4.Value = "BStrike4"
+parker.Strike5.Value = "BStrike5"
+parker.Taunt.Value = "GoonTaunt"
+
+parker.Rush5:Destroy()
+parker.Rush6:Destroy()
+parker.Rush7:Destroy()
+parker.Rush8:Destroy()
+parker.Strike6:Destroy()
+parker.Strike7:Destroy()
+parker.Strike8:Destroy()
+parker.Strike9:Destroy()
